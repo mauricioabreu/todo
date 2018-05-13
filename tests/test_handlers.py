@@ -1,5 +1,7 @@
+import pytest
+
 from todo.commands import AddNewTask
-from todo.handlers import AddNewTaskHandler
+from todo.handlers import AddNewTaskHandler, ValidationError
 
 
 class FakeTaskRepository(object):
@@ -23,3 +25,19 @@ def test_add_new_task():
     )
     handler.handle(command)
     assert repository.count() == 1
+
+
+def test_add_new_test_without_required_fields():
+    repository = FakeTaskRepository()
+    handler = AddNewTaskHandler(repository=repository)
+    command = AddNewTask(
+        title='', 
+        description=''
+    )
+    with pytest.raises(ValidationError) as error:
+        handler.handle(command)
+
+    errors = error.value.errors
+
+    assert errors['title'] == ['Length must be between 1 and 50.']
+    assert errors['description'] == ['Length must be between 1 and 150.']

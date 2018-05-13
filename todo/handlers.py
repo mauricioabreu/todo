@@ -14,13 +14,14 @@ class AddNewTaskHandler(object):
         self.repository = repository
 
     def handle(self, command):
-        try:
-            TaskSchema().load(
-                {'title': command.title,
-                'description': command.description}
-            )        
-        except marshmallow.ValidationError as errors:
-            return ValidationError(errors)
+        schema = TaskSchema()
+        errors = schema.validate({
+            'title': command.title,
+            'description': command.description
+        })        
+        
+        if errors:
+            raise ValidationError(errors=errors)
 
         task = Task(
             title=command.title,
