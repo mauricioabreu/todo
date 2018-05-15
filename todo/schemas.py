@@ -5,9 +5,9 @@ from marshmallow.validate import Length
 class TaskSchema(Schema):
     class Meta:
         strict = True
-        
+
     title = fields.String(
-        required=True, 
+        required=True,
         validate=[Length(min=1, max=50)]
     )
     description = fields.String(

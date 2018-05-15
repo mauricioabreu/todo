@@ -8,6 +8,7 @@ class ValidationError(Exception):
     def __init__(self, errors):
         self.errors = errors
 
+
 class AddNewTaskHandler(object):
 
     def __init__(self, repository):
@@ -18,8 +19,8 @@ class AddNewTaskHandler(object):
         errors = schema.validate({
             'title': command.title,
             'description': command.description
-        })        
-        
+        })
+
         if errors:
             raise ValidationError(errors=errors)
 
