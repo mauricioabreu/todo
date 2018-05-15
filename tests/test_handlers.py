@@ -26,7 +26,6 @@ def test_add_new_task():
     handler.handle(command)
     assert repository.count() == 1
 
-
 def test_add_new_test_without_required_fields():
     repository = FakeTaskRepository()
     handler = AddNewTaskHandler(repository=repository)
@@ -41,3 +40,14 @@ def test_add_new_test_without_required_fields():
 
     assert errors['title'] == ['Length must be between 1 and 50.']
     assert errors['description'] == ['Length must be between 1 and 150.']
+
+def test_add_new_task_start_as_not_completed():
+    repository = FakeTaskRepository()
+    handler = AddNewTaskHandler(repository=repository)
+    command = AddNewTask(
+        title='Buy milk', 
+        description='Need to buy 2L of milk'
+    )
+    task = handler.handle(command)
+
+    assert task.completed == False

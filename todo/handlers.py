@@ -25,6 +25,9 @@ class AddNewTaskHandler(object):
 
         task = Task(
             title=command.title,
-            description=command.description
+            description=command.description,
+            completed=False
         )
         self.repository.save(task)
+
+        return task
