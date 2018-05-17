@@ -1,19 +1,35 @@
 import pytest
 
-from todo.commands import AddNewTask
-from todo.handlers import AddNewTaskHandler, ValidationError
+from todo.commands import AddNewTask, UpdateTask
+from todo.handlers import AddNewTaskHandler, UpdateTaskHandler, ValidationError
 
 
 class FakeTaskRepository(object):
 
     def __init__(self):
-        self.tasks = []
+        self.tasks = {}
+        self.last_id = None
 
     def count(self):
         return len(self.tasks)
 
-    def save(self, task):
-        self.tasks.append(task)
+    def save(self, task, identifier=None):
+        task_id = identifier or self.next_id()
+        self.tasks[task_id] = task
+
+    def find_by_id(self, task_id):
+        return self.tasks[task_id]
+
+    def all(self):
+        return self.tasks
+
+    def next_id(self):
+        if not self.last_id:
+            self.last_id = 1
+        else:
+            self.last_id = self.last_id + 1
+
+        return self.last_id
 
 
 def test_add_new_task():
@@ -53,3 +69,26 @@ def test_add_new_task_start_as_not_completed():
     task = handler.handle(command)
 
     assert task.completed is False
+
+
+def test_update_task():
+    repository = FakeTaskRepository()
+    handler = AddNewTaskHandler(repository=repository)
+    command = AddNewTask(
+        title='Buy milk',
+        description='Need to buy 2L of milk'
+    )
+    handler.handle(command)
+
+    handler = UpdateTaskHandler(repository=repository)
+    command = UpdateTask(
+        identifier=1,
+        title='Write for my blog',
+        description='I will talk about my last projects'
+    )
+    handler.handle(command)
+
+    task = repository.find_by_id(1)
+    assert task.title == 'Write for my blog'
+    assert task.description == 'I will talk about my last projects'
+    assert repository.count() == 1
