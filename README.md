@@ -1,5 +1,14 @@
 # Todo
 
+A Todo list application.
+
+Features of this project:
+
+* Add tasks
+* Update tasks
+* Mark tasks as completed
+* Remove tasks
+
 This is a study project.
 
 I am learning more about new systems architectures. 
