@@ -1,6 +1,7 @@
 import pytest
 
 from todo.commands import AddNewTask, UpdateTask
+from todo.exceptions import ObjectNotFound
 from todo.handlers import AddNewTaskHandler, UpdateTaskHandler, ValidationError
 
 
@@ -18,7 +19,10 @@ class FakeTaskRepository(object):
         self.tasks[task_id] = task
 
     def find_by_id(self, task_id):
-        return self.tasks[task_id]
+        try:
+            return self.tasks[task_id]
+        except KeyError:
+            raise ObjectNotFound
 
     def all(self):
         return self.tasks
@@ -92,3 +96,15 @@ def test_update_task():
     assert task.title == 'Write for my blog'
     assert task.description == 'I will talk about my last projects'
     assert repository.count() == 1
+
+
+def test_update_invalid_task():
+    repository = FakeTaskRepository()
+    handler = UpdateTaskHandler(repository=repository)
+    command = UpdateTask(
+        identifier=1,
+        title='Write for my blog',
+        description='I will talk about my last projects'
+    )
+    with pytest.raises(ObjectNotFound):
+        handler.handle(command)
