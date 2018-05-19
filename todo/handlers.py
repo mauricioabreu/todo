@@ -1,6 +1,6 @@
 import marshmallow
 
-from todo.entities import Task
+from todo.entities import Task, Project
 from todo.schemas import TaskSchema
 
 
@@ -18,16 +18,19 @@ class AddNewTaskHandler(object):
         schema = TaskSchema()
         errors = schema.validate({
             'title': command.title,
-            'description': command.description
+            'description': command.description,
+            'project_id': command.project_id
         })
 
         if errors:
             raise ValidationError(errors=errors)
 
+        project = Project(name='Daily stuff')
         task = Task(
             title=command.title,
             description=command.description,
-            completed=False
+            completed=False,
+            project=project
         )
         self.repository.save(task)
 

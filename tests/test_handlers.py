@@ -41,10 +41,16 @@ def test_add_new_task():
     handler = AddNewTaskHandler(repository=repository)
     command = AddNewTask(
         title='Buy milk',
-        description='Need to buy 2L of milk'
+        description='Need to buy 2L of milk',
+        project_id=1
     )
     handler.handle(command)
     assert repository.count() == 1
+
+    task = repository.find_by_id(1)
+    assert task.title == 'Buy milk'
+    assert task.description == 'Need to buy 2L of milk'
+    assert task.project.name == 'Daily stuff'
 
 
 def test_add_new_test_without_required_fields():
@@ -52,7 +58,8 @@ def test_add_new_test_without_required_fields():
     handler = AddNewTaskHandler(repository=repository)
     command = AddNewTask(
         title='',
-        description=''
+        description='',
+        project_id=None
     )
     with pytest.raises(ValidationError) as error:
         handler.handle(command)
@@ -68,7 +75,8 @@ def test_add_new_task_start_as_not_completed():
     handler = AddNewTaskHandler(repository=repository)
     command = AddNewTask(
         title='Buy milk',
-        description='Need to buy 2L of milk'
+        description='Need to buy 2L of milk',
+        project_id=1
     )
     task = handler.handle(command)
 
@@ -80,7 +88,8 @@ def test_update_task():
     handler = AddNewTaskHandler(repository=repository)
     command = AddNewTask(
         title='Buy milk',
-        description='Need to buy 2L of milk'
+        description='Need to buy 2L of milk',
+        project_id=1
     )
     handler.handle(command)
 

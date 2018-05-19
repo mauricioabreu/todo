@@ -1,8 +1,15 @@
+class AddNewProject(object):
+
+    def __init__(self, name):
+        self.name = name
+
+
 class AddNewTask(object):
 
-    def __init__(self, title, description):
+    def __init__(self, title, description, project_id):
         self.title = title
         self.description = description
+        self.project_id = project_id
 
 
 class UpdateTask(object):
